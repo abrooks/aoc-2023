@@ -1,0 +1,6 @@
+
+# Clojure project ignores
+/target/
+/.cpcache/
+/.clj-kondo/.cache/**
+/.lsp/.cache/**
