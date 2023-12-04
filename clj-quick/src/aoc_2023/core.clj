@@ -9,9 +9,9 @@
   (let [digits (re-seq #"\d" line)]
      (Integer/parseInt (str (first digits) (last digits)))))
 
-(defn day-1a []
+(defn day-1a [f]
   (->>
-   (read-data "day-1-input.txt")
+   (read-data f)
    (map extract-digits)
    (apply +)))
 
@@ -46,9 +46,9 @@
         digits (apply str (map #(digit-map % %) digits))] 
     (Integer/parseInt (str (first digits) (last digits)))))
 
-(defn day-1b []
+(defn day-1b [f]
   (->>
-   (read-data "day-1-input.txt")
+   (read-data f)
    (map extract-digits-two)
    (apply +)))
 

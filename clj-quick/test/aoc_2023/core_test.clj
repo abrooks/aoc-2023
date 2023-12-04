@@ -3,7 +3,7 @@
             [aoc-2023.core :as ac]
             [clojure.string :as str]))
 
-(defn test-examples [fn-under-test example-map]
+(defn test-example-map [fn-under-test example-map]
   (doseq [[example result] (map vector (:examples example-map)
                                        (:results example-map))]
     (is (= result (fn-under-test example)))))
@@ -14,9 +14,9 @@
 
 (deftest test-day-1a
   (testing "day-1a examples"
-    (test-examples ac/extract-digits day-1a-examples))
+    (test-example-map ac/extract-digits day-1a-examples))
   (testing "day-1a solution"
-    (is (= 54159 (ac/day-1a)))))
+    (is (= 54159 (ac/day-1a "day-1-input.txt")))))
 
 (def day-1b-examples
   {:examples ["two1nine" "eightwothree"
@@ -27,6 +27,6 @@
 
 (deftest test-day-1b
   (testing "day-1b examples"
-    (test-examples ac/extract-digits-two day-1b-examples))
+    (test-example-map ac/extract-digits-two day-1b-examples))
   (testing "day-1b solution"
-    (is (= 53866 (ac/day-1b)))))
+    (is (= 53866 (ac/day-1b "day-1-input.txt")))))
