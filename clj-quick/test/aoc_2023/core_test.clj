@@ -32,3 +32,24 @@
     (test-example-map ac/extract-digits-two day-1b-examples))
   (testing "day-1b solution"
     (is (= 53866 (ac/day-1b "day-1-input.txt")))))
+
+;;; Day 2 ;;;
+
+(def day-2a-example
+  ["Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green"
+   "Game 2: 1 blue, 2 green; 3 green, 4 blue, 1 red; 1 green, 1 blue"
+   "Game 3: 8 green, 6 blue, 20 red; 5 blue, 4 red, 13 green; 5 green, 1 red"
+   "Game 4: 1 green, 3 red, 6 blue; 3 green, 6 red; 3 green, 15 blue, 14 red"
+   "Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green"])
+
+(deftest test-day-2a
+  (testing "day-2a example"
+    (is (= 8 (apply + (ac/parse-day-2a day-2a-example))))
+  (testing "day-2a solution"
+    (is (= 2679 (ac/day-2a "day-2-input.txt"))))))
+
+(deftest test-day-2b
+  (testing "day-2b example"
+    (is (= 2286 (apply + (map ac/parse-day-2b day-2a-example))))
+  (testing "day-2a solution"
+    (is (= 77607 (ac/day-2b "day-2-input.txt"))))))
