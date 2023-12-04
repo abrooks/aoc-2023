@@ -5,6 +5,8 @@
 (defn read-data [filename]
   (str/split-lines (slurp (io/resource filename))))
 
+;;; Day 1 ;;;
+
 (defn extract-digits [line]
   (let [digits (re-seq #"\d" line)]
      (Integer/parseInt (str (first digits) (last digits)))))

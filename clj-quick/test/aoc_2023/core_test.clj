@@ -1,12 +1,14 @@
 (ns aoc-2023.core-test
-  (:require [clojure.test :refer :all]
-            [aoc-2023.core :as ac]
-            [clojure.string :as str]))
+  (:require [clojure.test :refer [deftest is testing]]
+            [aoc-2023.core :as ac]))
 
+;; This has been a typical pattern in previous AoC puzzles
 (defn test-example-map [fn-under-test example-map]
   (doseq [[example result] (map vector (:examples example-map)
                                        (:results example-map))]
     (is (= result (fn-under-test example)))))
+
+;;; Day 1 ;;;
 
 (def day-1a-examples 
   {:examples ["1abc2" "pqr3stu8vwx" "a1b2c3d4e5f" "treb7uchet"]
