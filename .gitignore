@@ -1,6 +1,9 @@
 
 # Clojure project ignores
 /target/
-/.cpcache/
+**/.cpcache/
+**/.swp
+**/.nrepl-port
 /.clj-kondo/.cache/**
 /.lsp/.cache/**
+**/.calva/output-window
