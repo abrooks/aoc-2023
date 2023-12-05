@@ -1,10 +1,11 @@
 (ns aoc-2023.core
-  (:require [clojure.java.io :as io]
-            [clojure.string :as str]
+  (:require [clojure.string :as str]
             [instaparse.core :as insta]))
 
-(defn read-data [filename]
-  (str/split-lines (slurp (io/resource filename))))
+(defn dbg [label value]
+  (prn label)
+  (clojure.pprint/pprint value)
+  value)
 
 ;;; Day 1 ;;;
 
@@ -12,9 +13,8 @@
   (let [digits (re-seq #"\d" line)]
      (Integer/parseInt (str (first digits) (last digits)))))
 
-(defn day-1a [f]
-  (->>
-   (read-data f)
+(defn day-1a [data]
+  (->> data
    (map extract-digits)
    (apply +)))
 
@@ -49,9 +49,8 @@
         digits (apply str (map #(digit-map % %) digits))] 
     (Integer/parseInt (str (first digits) (last digits)))))
 
-(defn day-1b [f]
-  (->>
-   (read-data f)
+(defn day-1b [data]
+  (->> data
    (map extract-digits-two)
    (apply +)))
 
@@ -78,9 +77,8 @@
         :when (not (some over-limit? (partition 2 counts)))]
       (Integer/parseInt day)))
 
-(defn day-2a [f]
-  (->>
-   (read-data f)
+(defn day-2a [data]
+  (->> data
    parse-day-2a
    (apply +)))
 
@@ -94,11 +92,55 @@
        vals
        (apply *)))
 
-(defn day-2b [f]
-  (->>
-    (read-data f)
+(defn day-2b [data]
+  (->> data
     (map parse-day-2b)
     (apply +)))
+
+;;; Day 3 ;;;
+
+(defn is-digit? [c]
+  (contains? (set "0123456789") c))
+
+(defn digit-other [c]
+  (cond (is-digit? c) :num
+        (= \. c)      :dot
+        :else         :sym))
+
+(defn day-3-parse-lines [line]
+  (->> line
+       (partition-by digit-other)
+       (map #(apply str %))))
+
+(defn entry-reduce-fn
+  [{:keys [end]} ni]
+  {:begin (if end (inc end) 0)
+   :end (+ (if end end -1) (count ni))
+   :item ni
+   :type (digit-other (first ni))})
+
+(defn in-perimeter [{nb :begin ne :end nc :col}
+                    {sb :begin se :end sc :col}]
+  (and (<= (dec nb) se)
+       (<= sb (inc ne))
+       (<= (dec nc) sc)
+       (<= sc (inc nc))))
+
+(defn find-real-parts [m]
+  (let [{nums :num syms :sym} m]
+    (for [n nums
+          :when (some #(in-perimeter n %) syms)]
+      (:item n))))
+
+(defn day-3a [data]
+  (->> data
+   (map day-3-parse-lines)
+   (map #(reductions entry-reduce-fn nil %)) 
+   (mapcat (fn [i l] (map #(assoc % :col i) l)) (range))
+   (group-by :type)
+   (find-real-parts)
+   (map #(Integer/parseInt %))
+   (apply +)))
 
 (comment
   (require 'clojure.test)
@@ -106,4 +148,4 @@
   (require 'aoc-2023.core-test :reload)
   (clojure.test/run-tests 'aoc-2023.core-test)
   ;; Keep kondo happy
-  [day-1a day-1b day-2a day-2b])
+  [day-1a day-1b day-2a day-2b day-3a])

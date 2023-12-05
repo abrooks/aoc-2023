@@ -1,5 +1,7 @@
 (ns aoc-2023.core-test
   (:require [clojure.test :refer [deftest is testing]]
+            [clojure.java.io :as io]
+            [clojure.string :as str]
             [aoc-2023.core :as ac]))
 
 ;; This has been a typical pattern in previous AoC puzzles
@@ -7,6 +9,9 @@
   (doseq [[example result] (map vector (:examples example-map)
                                        (:results example-map))]
     (is (= result (fn-under-test example)))))
+
+(defn read-data [filename]
+  (str/split-lines (slurp (io/resource filename))))
 
 ;;; Day 1 ;;;
 
@@ -18,7 +23,7 @@
   (testing "day-1a examples"
     (test-example-map ac/extract-digits day-1a-examples))
   (testing "day-1a solution"
-    (is (= 54159 (ac/day-1a "day-1-input.txt")))))
+    (is (= 54159 (ac/day-1a (read-data "day-1-input.txt"))))))
 
 (def day-1b-examples
   {:examples ["two1nine" "eightwothree"
@@ -31,7 +36,7 @@
   (testing "day-1b examples"
     (test-example-map ac/extract-digits-two day-1b-examples))
   (testing "day-1b solution"
-    (is (= 53866 (ac/day-1b "day-1-input.txt")))))
+    (is (= 53866 (ac/day-1b (read-data "day-1-input.txt"))))))
 
 ;;; Day 2 ;;;
 
@@ -46,10 +51,30 @@
   (testing "day-2a example"
     (is (= 8 (apply + (ac/parse-day-2a day-2a-example))))
   (testing "day-2a solution"
-    (is (= 2679 (ac/day-2a "day-2-input.txt"))))))
+    (is (= 2679 (ac/day-2a (read-data "day-2-input.txt")))))))
 
 (deftest test-day-2b
   (testing "day-2b example"
     (is (= 2286 (apply + (map ac/parse-day-2b day-2a-example))))
   (testing "day-2a solution"
-    (is (= 77607 (ac/day-2b "day-2-input.txt"))))))
+    (is (= 77607 (ac/day-2b (read-data "day-2-input.txt")))))))
+
+;;; Day 3 ;;;
+
+(def day-3-example
+  ["467..114.."
+   "...*......"
+   "..35..633."
+   "......#..."
+   "617*......"
+   ".....+.58."
+   "..592....."
+   "......755."
+   "...$.*...."
+   ".664.598.."])
+
+(deftest test-day-3a
+  (testing "day-3a example"
+    (is (= 4361 (ac/day-3a day-3-example))))
+  (testing "day-3a solution"
+    (is (= 522726 (ac/day-3a (read-data "day-3-input.txt"))))))
