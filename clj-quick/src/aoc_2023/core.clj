@@ -68,7 +68,7 @@
 (def day-2-limits {"red" 12 "green" 13 "blue" 14})
 
 (defn over-limit? [[count color]]
-  (let [count (Integer/parseInt count) ]
+  (let [count (Integer/parseInt count)]
      (< (day-2-limits color) count)))
 
 (defn parse-day-2a [lines]
@@ -140,6 +140,28 @@
    (group-by :type)
    (find-real-parts)
    (map #(Integer/parseInt %))
+   (apply +)))
+
+(defn find-meshed-gears [m]
+  (let [{nums :num syms :sym} m]
+    (for [n1 nums
+          n2 nums
+          :when (and (or (< (:col n1) (:col n2))
+                         (and (= (:col n1) (:col n2))
+                              (<  (:end n1) (:end n2))))
+                     (some #(and (in-perimeter n1 %)
+                                 (in-perimeter n2 %))
+                           syms))]
+      [(:item n1) (:item n2)])))
+
+(defn day-3b [data]
+  (->> data
+   (map day-3-parse-lines)
+   (map #(reductions entry-reduce-fn nil %)) 
+   (mapcat (fn [i l] (map #(assoc % :col i) l)) (range))
+   (group-by :type)
+   (find-meshed-gears)
+   (map (fn [[a b]] (* (Integer/parseInt a) (Integer/parseInt b))))
    (apply +)))
 
 (comment

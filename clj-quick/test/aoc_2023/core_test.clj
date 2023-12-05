@@ -78,3 +78,9 @@
     (is (= 4361 (ac/day-3a day-3-example))))
   (testing "day-3a solution"
     (is (= 522726 (ac/day-3a (read-data "day-3-input.txt"))))))
+
+(deftest test-day-3b
+  (testing "day-3b example"
+    (is (= 467835 (ac/day-3b day-3-example))))
+  (testing "day-3a solution"
+    (is (= 81721933 (ac/day-3b (read-data "day-3-input.txt"))))))
