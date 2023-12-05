@@ -1,5 +1,6 @@
 (ns aoc-2023.core
-  (:require [clojure.string :as str]
+  (:require [clojure.set :as set]
+            [clojure.string :as str]
             [instaparse.core :as insta]))
 
 (defn dbg [label value]
@@ -119,8 +120,8 @@
    :item ni
    :type (digit-other (first ni))})
 
-(defn in-perimeter [{nb :begin ne :end nc :col}
-                    {sb :begin se :end sc :col}]
+(defn in-perimeter [{nb :begin ne :end nc :row}
+                    {sb :begin se :end sc :row}]
   (and (<= (dec nb) se)
        (<= sb (inc ne))
        (<= (dec nc) sc)
@@ -136,7 +137,7 @@
   (->> data
    (map day-3-parse-lines)
    (map #(reductions entry-reduce-fn nil %)) 
-   (mapcat (fn [i l] (map #(assoc % :col i) l)) (range))
+   (mapcat (fn [i l] (map #(assoc % :row i) l)) (range))
    (group-by :type)
    (find-real-parts)
    (map #(Integer/parseInt %))
@@ -146,8 +147,9 @@
   (let [{nums :num syms :sym} m]
     (for [n1 nums
           n2 nums
-          :when (and (or (< (:col n1) (:col n2))
-                         (and (= (:col n1) (:col n2))
+          :when (and (or (= (inc (:row n1)) (:row n2))
+                         (= (+ 2 (:row n1)) (:row n2))
+                         (and (= (:row n1) (:row n2))
                               (<  (:end n1) (:end n2))))
                      (some #(and (in-perimeter n1 %)
                                  (in-perimeter n2 %))
@@ -158,16 +160,36 @@
   (->> data
    (map day-3-parse-lines)
    (map #(reductions entry-reduce-fn nil %)) 
-   (mapcat (fn [i l] (map #(assoc % :col i) l)) (range))
+   (mapcat (fn [i l] (map #(assoc % :row i) l)) (range))
    (group-by :type)
    (find-meshed-gears)
    (map (fn [[a b]] (* (Integer/parseInt a) (Integer/parseInt b))))
+   (apply +)))
+
+;;; Day 4 ;;;
+
+(def day-4-grammar
+  (insta/parser
+   "<card> = <'Card'> <' '>+ number <': '> winners <' | '> candidates
+    winners = numberseq
+    candidates = numberseq
+    <numberseq> = <' '>? number (<' '>+ number)*
+    <number> = #'[0-9]+'"))
+
+(defn day-4-intersection [[_ [_ & winners] [_ & candidates]]]
+  (count (set/intersection (set winners) (set candidates))))
+
+(defn day-4a [data]
+  (->> data
+   (map day-4-grammar)
+   (map day-4-intersection)
+   (map #(int (Math/floor (Math/pow 2 (dec %)))))
    (apply +)))
 
 (comment
   (require 'clojure.test)
   (require 'aoc-2023.core :reload)
   (require 'aoc-2023.core-test :reload)
-  (clojure.test/run-tests 'aoc-2023.core-test)
+  (time (clojure.test/run-tests 'aoc-2023.core-test))
   ;; Keep kondo happy
   [day-1a day-1b day-2a day-2b day-3a])
