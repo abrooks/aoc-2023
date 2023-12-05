@@ -1,11 +1,13 @@
 (ns aoc-2023.core
-  (:require [clojure.set :as set]
+  (:require [clojure.pprint :refer [pprint]]
+            [clojure.set :as set]
             [clojure.string :as str]
+            [helins.interval.map :as imap]
             [instaparse.core :as insta]))
 
 (defn dbg [label value]
   (prn label)
-  (clojure.pprint/pprint value)
+  (pprint value)
   value)
 
 ;;; Day 1 ;;;
@@ -204,10 +206,58 @@
    (apply-winners)
    (apply +)))
 
+;;; Day 5 ;;;
+
+(def day-5-grammar
+  (insta/parser
+   "<almanac> = seeds (<'\n\n'> mapping)*
+    seeds = <'seeds:'> (<' '> number)+
+    mapping = #'[a-z]+' <'-to-'> #'[a-z]+' <' map:'> (<'\n'> entry)*
+    <entry> = number <' '> number <' '> number
+    <number> = #'[0-9]+'"))
+
+(def day-5-transforms
+  {:seeds (fn [& seeds] (map #(Long/parseLong %) seeds))
+   :mapping (fn [from to & entries]
+               (let [entries (map  #(Long/parseLong %) entries)]
+                 [from to (partition 3 entries)]))})
+
+(defn build-imap [entries]
+  (reduce (fn [m [dst src rng]]
+            (imap/mark m src (+ src rng) [dst src rng]))
+          imap/empty
+          entries))
+
+(defn build-maps [mappings]
+  {:next-map (into {} (map #(vec (take 2 %)) mappings))
+   :imaps (zipmap (map first mappings)
+                  (map #(build-imap  (nth % 2)) mappings))})
+
+(defn mapped-item [n [dst src _]]
+  (+ dst (- n src)))
+
+(defn look-up [{:keys [next-map imaps] :as m} map-name items]
+   (if map-name
+     (let [new-items (map #(if-let [i (get (imaps map-name) %)]
+                             (mapped-item % (first i))
+                             %)
+                          items)]
+       (look-up m (next-map map-name) new-items))
+     items))
+
+(defn day-5a [data]
+  (->
+   (day-5-grammar data)
+   (->> (insta/transform day-5-transforms))
+   (as-> [seeds & mappings]
+     (let [maps (build-maps mappings)]
+       (look-up maps "seed" seeds)))
+   (->> (apply min))))
+
 (comment
   (require 'clojure.test)
   (require 'aoc-2023.core :reload)
   (require 'aoc-2023.core-test :reload)
   (time (clojure.test/run-tests 'aoc-2023.core-test))
   ;; Keep kondo happy
-  [day-1a day-1b day-2a day-2b day-3a day-3b day-4a day-4b])
+  [day-1a day-1b day-2a day-2b day-3a day-3b day-4a day-4b day-5a])

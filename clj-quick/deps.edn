@@ -1,5 +1,6 @@
 {:paths ["src" "../resources" "test"]
  :deps {org.clojure/clojure {:mvn/version "1.11.1"}
+        io.helins/interval {:mvn/version "1.0.0-beta0"}
         instaparse/instaparse {:mvn/version "1.4.12"}}
  :aliases
  {:test {:extra-paths ["test"]
