@@ -102,3 +102,9 @@
     (is (= 13 (ac/day-4a (:examples day-4-example)))))
   (testing "day-4a solution"
     (is (= 25004 (ac/day-4a (read-data "day-4-input.txt"))))))
+
+(deftest test-day-4b
+  (testing "day-4b example"
+    (is (= 30 (ac/day-4b (:examples day-4-example)))))
+  (testing "day-4b solution"
+    (is (= 14427616 (ac/day-4b (read-data "day-4-input.txt"))))))

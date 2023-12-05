@@ -145,6 +145,7 @@
 
 (defn find-meshed-gears [m]
   (let [{nums :num syms :sym} m]
+    ;; TODO (partition 3 1 (partition-by)...)
     (for [n1 nums
           n2 nums
           :when (and (or (= (inc (:row n1)) (:row n2))
@@ -186,10 +187,27 @@
    (map #(int (Math/floor (Math/pow 2 (dec %)))))
    (apply +)))
 
+;; NOTE: Problem statement doesn't say
+;; what happens when you go past the number of cards
+
+(defn apply-winners [match-counts]
+  (let [accumulator (volatile! (vec (repeat (count match-counts) 1)))]
+    (doseq [[i count] (map-indexed vector match-counts)]
+      (doseq [j (range (inc i) (+ (inc i) count))]
+        (vswap! accumulator update j #(+ % (@accumulator i)))))
+    @accumulator))
+
+(defn day-4b [data]
+  (->> data
+   (map day-4-grammar)
+   (map day-4-intersection)
+   (apply-winners)
+   (apply +)))
+
 (comment
   (require 'clojure.test)
   (require 'aoc-2023.core :reload)
   (require 'aoc-2023.core-test :reload)
   (time (clojure.test/run-tests 'aoc-2023.core-test))
   ;; Keep kondo happy
-  [day-1a day-1b day-2a day-2b day-3a])
+  [day-1a day-1b day-2a day-2b day-3a day-3b day-4a day-4b])
