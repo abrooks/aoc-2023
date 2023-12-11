@@ -199,3 +199,28 @@
     (is (= 5905 (ac/day-7b (:example day-7-examples)))))
   (testing "day-7b solution"
     (is (= 254494947 (ac/day-7b (read-data "day-7-input.txt"))))))
+
+;;; Day 8 ;;;
+
+(def day-8-examples
+  {:examples [["RL"
+               ""
+               "AAA = (BBB, CCC)"
+               "BBB = (DDD, EEE)"
+               "CCC = (ZZZ, GGG)"
+               "DDD = (DDD, DDD)"
+               "EEE = (EEE, EEE)"
+               "GGG = (GGG, GGG)"
+               "ZZZ = (ZZZ, ZZZ)"]
+              ["LLR"
+               ""
+               "AAA = (BBB, BBB)"
+               "BBB = (AAA, ZZZ)"
+               "ZZZ = (ZZZ, ZZZ)"]]
+   :results [2 6]})
+
+(deftest test-day-8a
+  (testing "day-8a example"
+    (is (= (:results day-8-examples) (map ac/day-8a (:examples day-8-examples)))))
+  (testing "day-8a solution"
+    (is (= -1 (ac/day-8a (read-data "day-8-input.txt"))))))
