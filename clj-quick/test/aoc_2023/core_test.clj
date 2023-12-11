@@ -186,11 +186,16 @@
              "T55J5 684"
              "KK677 28"
              "KTJJT 220"
-             "QQQJA 483"]
-   :result 6440})
+             "QQQJA 483"]})
 
 (deftest test-day-7a
   (testing "day-7a example"
-    (is (= (day-7-examples :result) (ac/day-7a (:example day-7-examples)))))
+    (is (= 6440 (ac/day-7a (:example day-7-examples)))))
   (testing "day-7a solution"
     (is (= 253866470 (ac/day-7a (read-data "day-7-input.txt"))))))
+
+(deftest test-day-7b
+  (testing "day-7b example"
+    (is (= 5905 (ac/day-7b (:example day-7-examples)))))
+  (testing "day-7b solution"
+    (is (= 254494947 (ac/day-7b (read-data "day-7-input.txt"))))))

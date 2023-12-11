@@ -365,6 +365,47 @@
                      (* (inc %1) (hand-bids h)))
                   (range)
                   ranked-hands))))
+;; day 7 part 2
+
+(def joker-card-strength (assoc card-strength \J 1))
+
+(defn joker-hand-type [hand]
+  (let [card-counts (sort (vals (dissoc (frequencies hand) \J)))]
+    (case card-counts
+      []          :5K ; 5 jokers
+      [1]         :5K ; 4 jokers
+      [2]         :5K ; 3 jokers
+      [3]         :5K ; 2 jokers
+      [4]         :5K ; 1 jokers
+      [1 1]       :4K ; 3 jokers
+      [1 2]       :4K ; 2 jokers
+      [1 3]       :4K ; 1 jokers
+      [2 2]       :FH ; 1 jokers
+      [1 1 1]     :3K ; 2 jokers
+      [1 1 2]     :3K ; 1 jokers
+      [1 1 1 1]   :1P ; 1 jokers
+      [1 1 1 1 1] :HC
+      [1 1 1 2]   :1P
+      [1 2 2]     :2P
+      [1 1 3]     :3K
+      [2 3]       :FH
+      [1 4]       :4K
+      [5]         :5K)))
+
+(defn joker-hand-value [hand]
+  (with-meta (into [(hand-strength (joker-hand-type hand))] (map joker-card-strength hand))
+    {:hand hand}))
+
+(defn day-7b [data]
+  (let [parsed-lines (map #(str/split % #"\s+") data)
+        [hands bids] (apply map vector parsed-lines)
+        ranked-hands (sort (map joker-hand-value hands))
+        hand-bids (zipmap hands
+                          (map #(Integer/parseInt %) bids))]
+    (apply + (map #(let [h (-> %2 meta :hand)]
+                     (* (inc %1) (hand-bids h)))
+                  (range)
+                  ranked-hands))))
 
 (comment
   (require 'clojure.test)
@@ -373,4 +414,4 @@
   (time (clojure.test/run-tests 'aoc-2023.core-test))
   ;; Keep kondo happy
   [day-1a day-1b day-2a day-2b day-3a day-3b day-4a day-4b day-5a day-5b day-6a day-6b]
-  [day-7a])
+  [day-7a day-7b])
