@@ -332,10 +332,45 @@
       (- (inc time)
          (* 2 (count (take-while #(<= % dist) trials))))))
 
+;;; day 7 ;;;
+
+(def card-strength
+  {\A 14 \K 13 \Q 12 \J 11 \T 10 \9 9 \8 8 \7 7 \6 6 \5 5 \4 4 \3 3 \2 2})
+
+(def hand-strength
+  {:5K 6 :4K 5 :FH 4 :3K 3 :2P 2 :1P 1 :HC 0})
+
+(defn hand-type [hand]
+  (let [card-counts (sort (vals (frequencies hand)))]
+    (case card-counts
+      [1 1 1 1 1] :HC
+      [1 1 1 2]   :1P
+      [1 2 2]     :2P
+      [1 1 3]     :3K
+      [2 3]       :FH
+      [1 4]       :4K
+      [5]         :5K)))
+
+(defn hand-value [hand]
+  (with-meta (into [(hand-strength (hand-type hand))] (map card-strength hand))
+    {:hand hand}))
+
+(defn day-7a [data]
+  (let [parsed-lines (map #(str/split % #"\s+") data)
+        [hands bids] (apply map vector parsed-lines)
+        ranked-hands (sort (map hand-value hands))
+        hand-bids (zipmap hands
+                          (map #(Integer/parseInt %) bids))]
+    (apply + (map #(let [h (-> %2 meta :hand)]
+                     (* (inc %1) (hand-bids h)))
+                  (range)
+                  ranked-hands))))
+
 (comment
   (require 'clojure.test)
   (require 'aoc-2023.core :reload)
   (require 'aoc-2023.core-test :reload)
   (time (clojure.test/run-tests 'aoc-2023.core-test))
   ;; Keep kondo happy
-  [day-1a day-1b day-2a day-2b day-3a day-3b day-4a day-4b day-5a day-5b day-6a day-6b])
+  [day-1a day-1b day-2a day-2b day-3a day-3b day-4a day-4b day-5a day-5b day-6a day-6b]
+  [day-7a])

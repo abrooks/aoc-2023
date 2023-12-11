@@ -178,3 +178,19 @@
     (is (= 71503 (ac/day-6b (:example day-6-examples)))))
   (testing "day-6b solution"
     (is (= 36919753 (ac/day-6b (read-data "day-6-input.txt"))))))
+
+;;; Day 7 ;;;
+
+(def day-7-examples
+  {:example ["32T3K 765"
+             "T55J5 684"
+             "KK677 28"
+             "KTJJT 220"
+             "QQQJA 483"]
+   :result 6440})
+
+(deftest test-day-7a
+  (testing "day-7a example"
+    (is (= (day-7-examples :result) (ac/day-7a (:example day-7-examples)))))
+  (testing "day-7a solution"
+    (is (= 253866470 (ac/day-7a (read-data "day-7-input.txt"))))))
