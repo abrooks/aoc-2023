@@ -427,6 +427,32 @@
         [_cur cnt] (reduce (nav-reducer node-entries "ZZZ") ["AAA" 0] directions)]
     cnt))
 
+(defn ghost-nav-reducer [net end]
+  (fn [acc input]
+    (let [[cur cnt] acc]
+      (if (.endsWith cur end)
+        (reduced acc)
+        (let [[L R] (net cur)
+              nxt ({\L L \R R} input)]
+          [nxt (+ cnt 1)])))))
+
+(defn find-gcd [a b]
+  (if (zero? b)
+    a
+    (recur b (mod a b))))
+
+(defn day-8b [data]
+  (let [[patt _ & nodes-lines] data
+        directions (cycle patt)
+        node-entries (into {} (map #((juxt first rest)
+                                     (re-seq #"\w+" %))
+                                   nodes-lines))
+        starts (filter #(.endsWith % "A") (keys node-entries))
+        paths (map #(reduce (ghost-nav-reducer node-entries "Z") [% 0] directions) starts)
+        counts (map second paths)
+        gcd (reduce find-gcd (set counts))]
+    (* gcd (apply * (map #(/ % gcd) counts)))))
+
 (comment
   (require 'clojure.test)
   (require 'aoc-2023.core :reload)
@@ -434,4 +460,4 @@
   (time (clojure.test/run-tests 'aoc-2023.core-test))
   ;; Keep kondo happy
   [day-1a day-1b day-2a day-2b day-3a day-3b day-4a day-4b day-5a day-5b day-6a day-6b]
-  [day-7a day-7b day-8a])
+  [day-7a day-7b day-8a day-8b])

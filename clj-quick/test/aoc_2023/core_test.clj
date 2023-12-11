@@ -224,3 +224,22 @@
     (is (= (:results day-8a-examples) (map ac/day-8a (:examples day-8a-examples)))))
   (testing "day-8a solution"
     (is (= 20659 (ac/day-8a (read-data "day-8-input.txt"))))))
+
+(def day-8b-examples
+  {:example ["LR"
+             ""
+             "11A = (11B, XXX)"
+             "11B = (XXX, 11Z)"
+             "11Z = (11B, XXX)"
+             "22A = (22B, XXX)"
+             "22B = (22C, 22C)"
+             "22C = (22Z, 22Z)"
+             "22Z = (22B, 22B)"
+             "XXX = (XXX, XXX)"]
+   :result 6})
+
+(deftest test-day-8b
+  (testing "day-8b example"
+    (is (= (:result day-8b-examples) (ac/day-8b (:example day-8b-examples)))))
+  (testing "day-8b solution"
+    (is (= 15690466351717 (ac/day-8b (read-data "day-8-input.txt"))))))
