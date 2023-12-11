@@ -322,10 +322,20 @@
                   (count (filter #(< d %) trials)))]
     (apply * margins)))
 
+(defn day-6b [[time-line dist-line]]
+  (let [parse-fn (fn [line]
+                   (let [[_label & nums] (re-seq #"\w+" line)]
+                     (Long/parseLong (apply str nums))))
+        time (parse-fn time-line)
+        dist (parse-fn dist-line)
+        trials (map #(* % (- time %)) (range (inc time)))]
+      (- (inc time)
+         (* 2 (count (take-while #(<= % dist) trials))))))
+
 (comment
   (require 'clojure.test)
   (require 'aoc-2023.core :reload)
   (require 'aoc-2023.core-test :reload)
   (time (clojure.test/run-tests 'aoc-2023.core-test))
   ;; Keep kondo happy
-  [day-1a day-1b day-2a day-2b day-3a day-3b day-4a day-4b day-5a day-5b day-6a])
+  [day-1a day-1b day-2a day-2b day-3a day-3b day-4a day-4b day-5a day-5b day-6a day-6b])
