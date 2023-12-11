@@ -309,10 +309,23 @@
    (->> (sort-by first))
    ffirst))
 
+;;; Day 6 ;;;
+
+(defn day-6a [[time-line dist-line]]
+  (let [parse-fn (fn [line]
+                   (let [[_label & nums] (re-seq #"\w+" line)]
+                     (map #(Long/parseLong %) nums)))
+        times (parse-fn time-line)
+        dists (parse-fn dist-line)
+        margins (for [[t d] (map vector times dists)
+                      :let [trials (map #(* % (- t %)) (range (inc t)))]]
+                  (count (filter #(< d %) trials)))]
+    (apply * margins)))
+
 (comment
   (require 'clojure.test)
   (require 'aoc-2023.core :reload)
   (require 'aoc-2023.core-test :reload)
   (time (clojure.test/run-tests 'aoc-2023.core-test))
   ;; Keep kondo happy
-  [day-1a day-1b day-2a day-2b day-3a day-3b day-4a day-4b day-5a day-5b])
+  [day-1a day-1b day-2a day-2b day-3a day-3b day-4a day-4b day-5a day-5b day-6a])

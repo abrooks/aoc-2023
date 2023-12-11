@@ -158,3 +158,17 @@
     (is (= 46 (ac/day-5b (:example day-5-examples)))))
   (testing "day-5b solution"
     (is (= 60568880 (ac/day-5b (str/join "\n" (read-data "day-5-input.txt")))))))
+
+;;; Day 6 ;;;
+
+(def day-6-examples
+  {:example ["Time:      7  15  30"
+   "Distance:  9  40  200"]
+   :results [4 8 9]})
+
+(deftest test-day-6a
+  (testing "day-6a example"
+    (is (= (apply * (day-6-examples :results))
+           (ac/day-6a (:example day-6-examples)))))
+  (testing "day-6a solution"
+    (is (= 1108800 (ac/day-6a (read-data "day-6-input.txt"))))))
