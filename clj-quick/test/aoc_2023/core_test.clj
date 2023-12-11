@@ -152,3 +152,9 @@
     (is (= 35 (ac/day-5a (:example day-5-examples)))))
   (testing "day-5a solution"
     (is (= 289863851 (ac/day-5a (str/join "\n" (read-data "day-5-input.txt")))))))
+
+(deftest test-day-5b
+  (testing "day-5b example"
+    (is (= 46 (ac/day-5b (:example day-5-examples)))))
+  (testing "day-5b solution"
+    (is (= 60568880 (ac/day-5b (str/join "\n" (read-data "day-5-input.txt")))))))

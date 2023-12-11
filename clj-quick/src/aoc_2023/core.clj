@@ -254,10 +254,65 @@
        (look-up maps "seed" seeds)))
    (->> (apply min))))
 
+(defn range-splitter [[start end]]
+  (fn xf [rf]
+    (let [base (atom [start end])]
+      (fn step
+        ([] (rf))
+        ([acc] (if @base
+                    (rf acc @base)
+                    (rf acc)))
+        ([acc input]
+         (let [[a b] @base [x y] input]
+           (cond
+             (and (<  a x)(<  y b)) (do (reset! base [y b]) (-> acc (rf [a x]) (rf [x y])))
+             (and (<= x a)(<= b y)) (do (reset! base   nil) (-> acc (rf [a b])))
+             (and (<  a x)(<= b y)) (do (reset! base   nil) (-> acc (rf [a x]) (rf [x b])))
+             (and (<= x a)(<  y b)) (do (reset! base [y b]) (-> acc (rf [a y]))))))))))
+
+(defn range-sort [[a b][c d]]
+  (cond
+    (<= a b c d) -1
+    (<= c d a b) 1
+    :else (throw (ex-info "Unsorted ranges" {:a a :b b :c c :d d}))))
+
+(defn range-look-up [{:keys [next-map imaps] :as m} map-name item-ranges]
+  (if-let [cur-map (imaps map-name)]
+    (let [ ranges (apply concat
+                         (for [[a b] item-ranges
+                               :let [ map-ranges (subseq cur-map >= a <= (dec b)) ; WORKAROUND: < b doesn't work
+                                     map-ranges (map first map-ranges)]]
+                           (transduce (range-splitter [a b]) conj [] map-ranges)))
+          sorted-ranges (sort range-sort ranges)
+          new-item-ranges (map (fn [[a b]]
+                                 (let [ map-ranges (subseq cur-map >= a <= (dec b)) ; WORKAROUND: < b doesn't work
+                                       _ (assert (<= (count map-ranges) 1))
+                                       [[x _y] q :as found] (first map-ranges)
+                                       [X _ _] (first q)]
+                                   (if found
+                                     [(+ X (- a x))
+                                      (+ X (- b x))]
+                                     [a b])))
+                               sorted-ranges)]
+      (range-look-up m (next-map map-name) new-item-ranges))
+    item-ranges))
+
+(defn day-5b [data]
+  (->
+   (day-5-grammar data)
+   (->> (insta/transform day-5-transforms))
+   (as-> [seeds & mappings]
+         (let [maps (build-maps mappings)
+               seeds (map (fn [[a b]] [a (+ a b)])
+                          (partition 2 seeds))]
+           (range-look-up maps "seed" seeds)))
+   (->> (sort-by first))
+   ffirst))
+
 (comment
   (require 'clojure.test)
   (require 'aoc-2023.core :reload)
   (require 'aoc-2023.core-test :reload)
   (time (clojure.test/run-tests 'aoc-2023.core-test))
   ;; Keep kondo happy
-  [day-1a day-1b day-2a day-2b day-3a day-3b day-4a day-4b day-5a])
+  [day-1a day-1b day-2a day-2b day-3a day-3b day-4a day-4b day-5a day-5b])
