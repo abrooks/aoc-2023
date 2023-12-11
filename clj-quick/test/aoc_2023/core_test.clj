@@ -202,7 +202,7 @@
 
 ;;; Day 8 ;;;
 
-(def day-8-examples
+(def day-8a-examples
   {:examples [["RL"
                ""
                "AAA = (BBB, CCC)"
@@ -221,6 +221,6 @@
 
 (deftest test-day-8a
   (testing "day-8a example"
-    (is (= (:results day-8-examples) (map ac/day-8a (:examples day-8-examples)))))
+    (is (= (:results day-8a-examples) (map ac/day-8a (:examples day-8a-examples)))))
   (testing "day-8a solution"
-    (is (= -1 (ac/day-8a (read-data "day-8-input.txt"))))))
+    (is (= 20659 (ac/day-8a (read-data "day-8-input.txt"))))))
