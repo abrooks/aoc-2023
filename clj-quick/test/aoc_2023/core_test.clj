@@ -243,3 +243,18 @@
     (is (= (:result day-8b-examples) (ac/day-8b (:example day-8b-examples)))))
   (testing "day-8b solution"
     (is (= 15690466351717 (ac/day-8b (read-data "day-8-input.txt"))))))
+
+;;; Day 9 ;;;
+
+(def day-9-examples
+  {:examples ["0 3 6 9 12 15"
+              "1 3 6 10 15 21"
+              "10 13 16 21 30 45"]
+   :results [18 28 68]})
+
+(deftest test-day-9a
+  (testing "day-9a example"
+    (is (= (apply + (day-9-examples :results))
+           (ac/day-9a (:examples day-9-examples)))))
+  (testing "day-9a solution"
+    (is (= 2098530125 (ac/day-9a (read-data "day-9-input.txt"))))))

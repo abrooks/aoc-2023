@@ -453,6 +453,24 @@
         gcd (reduce find-gcd (set counts))]
     (* gcd (apply * (map #(/ % gcd) counts)))))
 
+;;; Day 9 ;;;
+
+(defn next-row [s]
+  (map (fn [[a b]] (- b a)) (partition 2 1 s)))
+
+(defn compute-next [s]
+  (if (every? zero? s)
+    0
+    (+ (last s) (compute-next (next-row s)))))
+  
+(defn day-9a [data]
+  (->> data
+       (map #(str/split % #"\s+"))
+       (map #(map (fn [n] (Long/parseLong n)) %))
+       (map compute-next)
+       (apply +)))
+
+
 (comment
   (require 'clojure.test)
   (require 'aoc-2023.core :reload)
@@ -460,4 +478,4 @@
   (time (clojure.test/run-tests 'aoc-2023.core-test))
   ;; Keep kondo happy
   [day-1a day-1b day-2a day-2b day-3a day-3b day-4a day-4b day-5a day-5b day-6a day-6b]
-  [day-7a day-7b day-8a day-8b])
+  [day-7a day-7b day-8a day-8b day-9a])
