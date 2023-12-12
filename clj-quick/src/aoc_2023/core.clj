@@ -470,6 +470,18 @@
        (map compute-next)
        (apply +)))
 
+(defn compute-prev [s]
+  (if (every? zero? s)
+    0
+    (- (first s) (compute-prev (next-row s)))))
+
+(defn day-9b [data]
+  (->> data
+       (map #(str/split % #"\s+"))
+       (map #(map (fn [n] (Long/parseLong n)) %))
+       (map compute-prev)
+       (apply +)))
+
 
 (comment
   (require 'clojure.test)

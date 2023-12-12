@@ -250,11 +250,21 @@
   {:examples ["0 3 6 9 12 15"
               "1 3 6 10 15 21"
               "10 13 16 21 30 45"]
-   :results [18 28 68]})
+   :results-a [18 28 68]
+   :results-b [-3 0 5]})
 
 (deftest test-day-9a
   (testing "day-9a example"
-    (is (= (apply + (day-9-examples :results))
+    (is (= (apply + (day-9-examples :results-a))
            (ac/day-9a (:examples day-9-examples)))))
   (testing "day-9a solution"
     (is (= 2098530125 (ac/day-9a (read-data "day-9-input.txt"))))))
+
+
+(deftest test-day-9b
+  (testing "day-9b example"
+    (is (= (apply + (day-9-examples :results-b))
+           (ac/day-9b (:examples day-9-examples)))))
+  
+  (testing "day-9b solution"
+    (is (= 1016 (ac/day-9b (read-data "day-9-input.txt"))))))
