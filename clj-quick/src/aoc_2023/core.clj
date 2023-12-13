@@ -513,16 +513,17 @@
 
 (defn day-10a [data]
   (let [start (first (keep-indexed #(let [x (.indexOf %2 "S")]
-                                        (when (<= 0 x) [x %1]))
-                                     data))
+                                      (when (<= 0 x) [x %1]))
+                                   data))
         mdata (into {} (for [[y line] (map vector (range) data)
                              [x pipe] (map vector (range) line)]
                          [[x y] (pipe-dirs pipe)]))
-        mdata (assoc mdata start (set (for [dir (mdata start)
-                                              :let [npos (move start dir)]
-                                              :when (get (mdata npos) (from-to dir))]
-                                          dir)))
-        dist (single-explore-map mdata start start (first (mdata start)) 0 )]
+        start-dirs (set (for [dir (mdata start)
+                               :let [npos (move start dir)]
+                               :when (get (mdata npos) (from-to dir))]
+                           dir))
+        mdata (assoc mdata start start-dirs)
+        dist (single-explore-map mdata start start (first (mdata start)) 0)]
     (int (Math/ceil (/ dist 2)))))
    
 (comment
