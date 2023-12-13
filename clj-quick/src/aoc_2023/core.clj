@@ -482,7 +482,49 @@
        (map compute-prev)
        (apply +)))
 
+;;; Day 10 ;;;
 
+(def N [0 -1])
+(def S [0 1])
+(def E [1 0])
+(def W [-1 0])
+(def pipe-dirs
+  {\| #{N S}
+   \- #{E W}
+   \L #{N E}
+   \J #{N W}
+   \7 #{S W}
+   \F #{S E}
+   \. #{}
+   \S #{N S E W}})
+
+(defn from-to [[x y]]
+  [(- x) (- y)])
+
+(defn move [[x y] [dx dy]]
+  [(+ x dx) (+ y dy)])
+
+(defn single-explore-map [mdata start pos from-dir dist]
+  (let [ndir (first (disj (mdata pos) from-dir))
+        npos (move pos ndir)]
+    (if (not= npos start)
+      (recur mdata start npos (from-to ndir) (inc dist))
+      dist)))
+
+(defn day-10a [data]
+  (let [start (first (keep-indexed #(let [x (.indexOf %2 "S")]
+                                        (when (<= 0 x) [x %1]))
+                                     data))
+        mdata (into {} (for [[y line] (map vector (range) data)
+                             [x pipe] (map vector (range) line)]
+                         [[x y] (pipe-dirs pipe)]))
+        mdata (assoc mdata start (set (for [dir (mdata start)
+                                              :let [npos (move start dir)]
+                                              :when (get (mdata npos) (from-to dir))]
+                                          dir)))
+        dist (single-explore-map mdata start start (first (mdata start)) 0 )]
+    (int (Math/ceil (/ dist 2)))))
+   
 (comment
   (require 'clojure.test)
   (require 'aoc-2023.core :reload)
@@ -490,4 +532,4 @@
   (time (clojure.test/run-tests 'aoc-2023.core-test))
   ;; Keep kondo happy
   [day-1a day-1b day-2a day-2b day-3a day-3b day-4a day-4b day-5a day-5b day-6a day-6b]
-  [day-7a day-7b day-8a day-8b day-9a])
+  [day-7a day-7b day-8a day-8b day-9a day-9b day-10a])

@@ -268,3 +268,26 @@
   
   (testing "day-9b solution"
     (is (= 1016 (ac/day-9b (read-data "day-9-input.txt"))))))
+
+;;; Day 10 ;;;
+
+(def day-10-examples
+  {:examples [["-L|F7"
+               "7S-7|"
+               "L|7||"
+               "-L-J|"
+               "L|-JF"]
+              ["7-F7-"
+               ".FJ|7"
+               "SJLL7"
+               "|F--J"
+               "LJ.LJ"]]
+   :results [4 8]})
+
+(deftest test-day-10a
+  (testing "day-10a example"
+    (is (= (:results day-10-examples)
+           (map ac/day-10a (:examples day-10-examples)))))
+
+  (testing "day-10a solution"
+    (is (= 6828 (ac/day-10a (read-data "day-10-input.txt"))))))
