@@ -491,12 +491,13 @@
 (def pipe-dirs
   {\| #{N S}
    \- #{E W}
-   \L #{N E}
-   \J #{N W}
-   \7 #{S W}
-   \F #{S E}
+   \L ^{N :R E :L} #{N E}
+   \J ^{N :L W :R} #{N W}
+   \7 ^{S :R W :L} #{S W}
+   \F ^{S :L E :R} #{S E}
    \. #{}
    \S #{N S E W}})
+(def cw-dirs [N E S W])
 
 (defn from-to [[x y]]
   [(- x) (- y)])
@@ -525,6 +526,71 @@
         mdata (assoc mdata start start-dirs)
         dist (single-explore-map mdata start start (first (mdata start)) 0)]
     (int (Math/ceil (/ dist 2)))))
+
+(defn debug-map [data path insiders]
+  (println (apply str (repeat (count (first data)) \-)))
+  (doseq [[y line] (map vector (range) data)]
+    (doseq [[x _] (map vector (range) line)]
+      (let [pos [x y]
+            mark (cond (insiders pos) \I
+                       (path pos) \P
+                       :else \.)]
+        (print mark)))
+    (println)))
+
+(defn path-explore-map [mdata start pos from-dir path]
+  (let [odir (first (disj (mdata pos) from-dir))
+        next-from-dir (from-to odir)
+        turn (get (meta (mdata pos)) from-dir)
+        next-odir (first (disj (mdata (move pos odir)) next-from-dir))
+        X (drop 1 (take 4 (drop-while (complement #{next-from-dir}) (cycle [N E S W]))))
+        L (doall (take-while (complement #{next-odir}) X))
+        R (doall (drop 1 (drop-while (complement #{next-odir}) X)))
+        npos (with-meta (move pos odir) {:turn turn :L L :R R})]
+    (if (not= npos start)
+      (recur mdata start npos next-from-dir (conj path npos))
+      path)))
+
+(defn find-neighbors [path pos inside]
+  (remove path (map #(move pos %) (get (meta pos) inside))))
+
+(defn mark-insiders [path inside]
+  (set (mapcat #(find-neighbors path % inside) path)))
+
+(defn fill-rest [path insiders]
+  (let [insiders' (set (for [p insiders, d cw-dirs
+                             :let [ncand (move p d)]
+                             :when (not (path ncand))]
+                         ncand))
+        insiders' (into insiders insiders')]
+    (if (= (count insiders') (count insiders))
+      insiders'
+      (recur path insiders'))))
+
+(defn day-10b [data]
+  (let [start (first (keep-indexed #(let [x (.indexOf %2 "S")]
+                                      (when (<= 0 x) [x %1]))
+                                   data))
+        mdata (into {} (for [[y line] (map vector (range) data)
+                             [x pipe] (map vector (range) line)]
+                         [[x y] (pipe-dirs pipe)]))
+        start-dirs (set (for [dir (mdata start)
+                              :let [npos (move start dir)]
+                              :when (get (mdata npos) (from-to dir))]
+                          dir))
+        mdata (assoc mdata start (get (set (vals pipe-dirs)) start-dirs))
+        start-dir (first (mdata start))
+        start-turn (get (meta (mdata start)) start-dir)
+        start (with-meta start {:turn start-turn :start true})
+        path (path-explore-map mdata start start start-dir #{start})
+        #_ (debug-map data path #{})
+        lr-count (frequencies (map (comp :turn meta) path))
+        inside (if (< (lr-count :L) (lr-count :R)) :L :R)
+        insiders (mark-insiders path inside)
+        #_ (debug-map data path insiders)
+        insiders (fill-rest path insiders)]
+    #_(debug-map data path insiders)
+    (count insiders)))
    
 (comment
   (require 'clojure.test)
