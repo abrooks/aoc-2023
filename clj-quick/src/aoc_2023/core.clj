@@ -527,17 +527,6 @@
         dist (single-explore-map mdata start start (first (mdata start)) 0)]
     (int (Math/ceil (/ dist 2)))))
 
-(defn debug-map [data path insiders]
-  (println (apply str (repeat (count (first data)) \-)))
-  (doseq [[y line] (map vector (range) data)]
-    (doseq [[x _] (map vector (range) line)]
-      (let [pos [x y]
-            mark (cond (insiders pos) \I
-                       (path pos) \P
-                       :else \.)]
-        (print mark)))
-    (println)))
-
 (defn path-explore-map [mdata start pos from-dir path]
   (let [odir (first (disj (mdata pos) from-dir))
         next-from-dir (from-to odir)
@@ -583,13 +572,10 @@
         start-turn (get (meta (mdata start)) start-dir)
         start (with-meta start {:turn start-turn :start true})
         path (path-explore-map mdata start start start-dir #{start})
-        #_ (debug-map data path #{})
         lr-count (frequencies (map (comp :turn meta) path))
         inside (if (< (lr-count :L) (lr-count :R)) :L :R)
         insiders (mark-insiders path inside)
-        #_ (debug-map data path insiders)
         insiders (fill-rest path insiders)]
-    #_(debug-map data path insiders)
     (count insiders)))
    
 (comment
