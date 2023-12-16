@@ -339,4 +339,32 @@
            (map ac/day-10b (:examples day-10b-examples)))))
 
   (testing "day-10b solution"
-    (is (= -1 (ac/day-10b (read-data "day-10-input.txt"))))))
+    (is (=  459 (ac/day-10b (read-data "day-10-input.txt"))))))
+
+;;; Day 11 ;;;
+(def day-11-examples
+  {:example ["...#......"
+             ".......#.."
+             "#........."
+             ".........."
+             "......#..."
+             ".#........"
+             ".........#"
+             ".........."
+             ".......#.."
+             "#...#....."]
+   :result [374 8410]})
+
+(deftest test-day-11a
+  (testing "day-11a example"
+    (is (= (first (:result day-11-examples))
+           (ac/day-11a 2 (:example day-11-examples)))))
+  (testing "day-11a solution"
+    (is (= 9599070 (ac/day-11a 2 (read-data "day-11-input.txt"))))))
+
+(deftest test-day-11b
+  (testing "day-11b example"
+    (is (= (second (:result day-11-examples))
+           (ac/day-11b 100 (:example day-11-examples)))))
+  (testing "day-11b solution"
+    (is (= 842645913794 (ac/day-11b (* 1000 1000) (read-data "day-11-input.txt"))))))

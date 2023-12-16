@@ -577,6 +577,29 @@
         insiders (mark-insiders path inside)
         insiders (fill-rest path insiders)]
     (count insiders)))
+
+;;; Day 11 ;;;
+
+(defn repeat-blanks-and-rotate [n data]
+ (apply map vector (mapcat #(if (every? #{\.} %) (repeat n %) [%]) data)))
+
+(defn day-11a [n data]
+  (let [data (repeat-blanks-and-rotate n data)
+        data (repeat-blanks-and-rotate n data)
+        galaxies (set (for [[y line] (map vector (range) data)
+                            [x loc] (map vector (range) line)
+                            :when (= loc \#)]
+                        [x y]))
+        galaxy-pair-double-dists (for [[x1 y1] galaxies
+                                       [x2 y2] galaxies]
+                                   (+ (abs (- x2 x1)), (abs (- y2 y1)))) ]
+  (/ (apply + galaxy-pair-double-dists) 2)))
+
+(defn day-11b [n data]
+  (let [r1 (day-11a 1 data)
+        r2 (day-11a 2 data)
+        d (- r2 r1)]
+    (+ r1 (* d (dec n)))))
    
 (comment
   (require 'clojure.test)
