@@ -378,7 +378,8 @@
               "????.#...#... 4,1,1"
               "????.######..#####. 1,6,5"
               "?###???????? 3,2,1"]
-   :results [1 4 1 1 4 10]})
+   :results [1 4 1 1 4 10]
+   :results-b [1 16384 1 16 2500 506250]})
 
 (deftest test-day-12a
   (testing "day-12a example"
@@ -386,3 +387,11 @@
            (map (comp ac/day-12a vector) (:examples day-12-examples)))))
   (testing "day-12a solution"
     (is (= 7407 (ac/day-12a (read-data "day-12-input.txt"))))))
+
+(deftest test-day-12b
+  (testing "day-12b example"
+    (is (= (:results-b day-12-examples)
+           (map (comp ac/day-12b vector) (:examples day-12-examples)))))
+  #_
+  (testing "day-12b solution"
+    (is (= -1 (ac/day-12b (read-data "day-12-input.txt"))))))
