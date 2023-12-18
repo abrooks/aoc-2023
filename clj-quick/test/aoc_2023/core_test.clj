@@ -368,3 +368,21 @@
            (ac/day-11b 100 (:example day-11-examples)))))
   (testing "day-11b solution"
     (is (= 842645913794 (ac/day-11b (* 1000 1000) (read-data "day-11-input.txt"))))))
+
+;;; Day 12 ;;;
+
+(def day-12-examples
+  {:examples ["???.### 1,1,3"
+              ".??..??...?##. 1,1,3"
+              "?#?#?#?#?#?#?#? 1,3,1,6"
+              "????.#...#... 4,1,1"
+              "????.######..#####. 1,6,5"
+              "?###???????? 3,2,1"]
+   :results [1 4 1 1 4 10]})
+
+(deftest test-day-12a
+  (testing "day-12a example"
+    (is (= (:results day-12-examples)
+           (map (comp ac/day-12a vector) (:examples day-12-examples)))))
+  (testing "day-12a solution"
+    (is (= 7407 (ac/day-12a (read-data "day-12-input.txt"))))))

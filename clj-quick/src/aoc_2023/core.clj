@@ -1,5 +1,6 @@
 (ns aoc-2023.core
-  (:require [clojure.pprint :refer [pprint]]
+  (:require [clojure.math.combinatorics :as combo]
+            [clojure.pprint :refer [pprint]]
             [clojure.set :as set]
             [clojure.string :as str]
             [helins.interval.map :as imap]
@@ -600,12 +601,50 @@
         r2 (day-11a 2 data)
         d (- r2 r1)]
     (+ r1 (* d (dec n)))))
-   
+
+;;; Day 12 ;;;
+
+(def ANYTHING
+  (reify java.lang.Object
+    (equals [_ _] true)
+    (toString [_] "?")))
+
+(defn parse-springs [line]
+  (let [[patt & springs] (re-seq #"[.?#0-9]+" line)
+        springs (map #(Integer/parseInt %) springs)
+        patt (map #(if (= \? %) ANYTHING %) patt)]
+    [patt springs]))
+
+(defn gen-cfg [gaps min-gaps springs]
+  (let [gaps (map + gaps min-gaps)
+        cfg (interleave gaps (concat springs [0]))]
+    (apply str (mapcat #(repeat %1 %2) cfg (cycle [\. \#])))))
+
+(defn spring-fittings [[patt springs]]
+  (let [length (count patt)
+        spring-len (apply + springs)
+        spring-gaps (dec (count springs))
+        missing-gaps (- length spring-len spring-gaps)
+        gap-positions (+ 2 spring-gaps)
+        min-gaps (conj (into [0] (repeat spring-gaps 1)) 0)
+        gap-combos (filter #(= missing-gaps (apply + %))
+                           (combo/selections (range (inc missing-gaps)) gap-positions))
+        gen-cfgs (map #(gen-cfg % min-gaps springs) gap-combos)
+        matching-cfgs (filter #(every? true? (map = patt %)) gen-cfgs)]
+    (count matching-cfgs)))
+
+(defn day-12a [data]
+  (->> data
+       (map parse-springs)
+       (map spring-fittings)
+       (apply +)))
+  
 (comment
   (require 'clojure.test)
   (require 'aoc-2023.core :reload)
   (require 'aoc-2023.core-test :reload)
   (time (clojure.test/run-tests 'aoc-2023.core-test))
+  (time (clojure.test/run-test-var #'aoc-2023.core-test/test-day-12a)))
   ;; Keep kondo happy
   [day-1a day-1b day-2a day-2b day-3a day-3b day-4a day-4b day-5a day-5b day-6a day-6b]
-  [day-7a day-7b day-8a day-8b day-9a day-9b day-10a])
+  [day-7a day-7b day-8a day-8b day-9a day-9b day-10a day-10b day-11a day-11b day-12a])
