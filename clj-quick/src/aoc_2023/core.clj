@@ -620,15 +620,24 @@
         cfg (interleave gaps (concat springs [0]))]
     (apply str (mapcat #(repeat %1 %2) cfg (cycle [\. \#])))))
 
+(defn divvy [n parts]
+  (loop [heads (map vector (range (inc n))) parts (dec parts)]
+    (if (pos? (dec parts))
+      (let [new-heads (mapcat #(for [x (range (inc (- n (apply + %))))]
+                                 (conj % x))
+                              heads)]
+        (recur new-heads (dec parts)))
+      (map #(conj % (- n (apply + %))) heads))))
+
 (defn spring-fittings [[patt springs]]
   (let [length (count patt)
         spring-len (apply + springs)
         spring-gaps (dec (count springs))
         missing-gaps (- length spring-len spring-gaps)
         gap-positions (+ 2 spring-gaps)
-        min-gaps (conj (into [0] (repeat spring-gaps 1)) 0)
         gap-combos (filter #(= missing-gaps (apply + %))
-                           (combo/selections (range (inc missing-gaps)) gap-positions))
+                           (divvy missing-gaps gap-positions))
+        min-gaps (conj (into [0] (repeat spring-gaps 1)) 0)
         gen-cfgs (map #(gen-cfg % min-gaps springs) gap-combos)
         matching-cfgs (filter #(every? true? (map = patt %)) gen-cfgs)]
     (count matching-cfgs)))
@@ -640,7 +649,7 @@
        (apply +)))
 
 (defn pentuplicate [[patt springs]]
-  [(apply concat (repeat 5 patt))
+  [(apply concat (interpose [ANYTHING] (repeat 5 patt)))
    (apply concat (repeat 5 springs))])
 
 (defn day-12b [data]
@@ -649,13 +658,24 @@
        (map pentuplicate)
        (map spring-fittings)
        (apply +)))
-  
+
+(defn fact [n]
+  (reduce *' (range 1 (inc n))))
+
+(defn bin-coeff [n k]
+  (/ (fact n) (*' (fact k) (fact (- n k)))))
+
+(defn stars-and-bars [n x]
+  (bin-coeff (+' n x -1) n))
+
 (comment
   (set! *warn-on-reflection* true)
   (require 'clojure.test)
   (require 'aoc-2023.core :reload)
   (require 'aoc-2023.core-test :reload)
+  (count (combo/partitions [1 1 1 1 1 1 1 1 1] :min 2))
   (time (clojure.test/run-tests 'aoc-2023.core-test))
+  (time (clojure.test/run-test-var #'aoc-2023.core-test/test-day-12a))
   (time (clojure.test/run-test-var #'aoc-2023.core-test/test-day-12b))
   ;; Keep kondo happy
   [day-1a day-1b day-2a day-2b day-3a day-3b day-4a day-4b day-5a day-5b day-6a day-6b]
