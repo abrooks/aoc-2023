@@ -8,7 +8,8 @@
 
 (defn dbg [label value]
   (prn label)
-  (pprint value)
+  (binding [*print-meta* true]
+    (pprint value))
   value)
 
 ;;; Day 1 ;;;
@@ -668,15 +669,42 @@
 (defn stars-and-bars [n x]
   (bin-coeff (+' n x -1) n))
 
+;;; Day 13 ;;;
+
+(defn find-mirror [data]
+  (->> data
+       (conj ['()])
+       (iterate (fn [[h [f & r]]]
+                  [(conj h f) r]))
+       (take (count data))
+       (drop 1)
+       (map #(with-meta %2 {:pos %1}) (map inc (range)))
+       (some #(when (every? true? (apply map = %)) %))
+       meta
+       :pos
+       ((fnil identity 0))))
+
+
+(defn find-mirrors [data]
+  (+  (*  100 (find-mirror data))
+      (find-mirror (apply map vector data))))
+
+(defn day-13a [data]
+  (->> data
+       (partition-by #{""})
+       (remove #{[""]})
+       (map find-mirrors)
+       (apply +)))
+
 (comment
   (set! *warn-on-reflection* true)
   (require 'clojure.test)
   (require 'aoc-2023.core :reload)
   (require 'aoc-2023.core-test :reload)
-  (count (combo/partitions [1 1 1 1 1 1 1 1 1] :min 2))
   (time (clojure.test/run-tests 'aoc-2023.core-test))
   (time (clojure.test/run-test-var #'aoc-2023.core-test/test-day-12a))
   (time (clojure.test/run-test-var #'aoc-2023.core-test/test-day-12b))
   ;; Keep kondo happy
   [day-1a day-1b day-2a day-2b day-3a day-3b day-4a day-4b day-5a day-5b day-6a day-6b]
-  [day-7a day-7b day-8a day-8b day-9a day-9b day-10a day-10b day-11a day-11b day-12a])
+  [day-7a day-7b day-8a day-8b day-9a day-9b day-10a day-10b day-11a day-11b day-12a]
+  [day-13a])
