@@ -671,7 +671,27 @@
 
 ;;; Day 13 ;;;
 
-(defn find-mirror [data]
+(defn normal-mirror [s]
+  (some #(when (every? true? (apply map = %)) %) s))
+
+(defn equal-ish? [fixups [a b]]
+  (if (= a b)
+    true
+    (let [{WRONG false} (group-by identity (map = a b))]
+      (if (= 1 (count WRONG))
+        (do (swap! fixups inc)
+            true)
+        false))))
+
+(defn fixup-mirror [s]
+  (some #(let [fixups (atom 0)]
+           (when (and (every? (partial equal-ish? fixups)
+                         (apply map vector %))
+                      (= 1 @fixups))
+             %))
+        s))
+
+(defn find-mirror [mfn data]
   (->> data
        (conj ['()])
        (iterate (fn [[h [f & r]]]
@@ -679,21 +699,28 @@
        (take (count data))
        (drop 1)
        (map #(with-meta %2 {:pos %1}) (map inc (range)))
-       (some #(when (every? true? (apply map = %)) %))
+       mfn
        meta
        :pos
        ((fnil identity 0))))
 
 
-(defn find-mirrors [data]
-  (+  (*  100 (find-mirror data))
-      (find-mirror (apply map vector data))))
+(defn find-mirrors [mfn data]
+  (+  (*  100 (find-mirror mfn data))
+      (find-mirror mfn (apply map vector data))))
 
 (defn day-13a [data]
   (->> data
        (partition-by #{""})
        (remove #{[""]})
-       (map find-mirrors)
+       (map #(find-mirrors normal-mirror %))
+       (apply +)))
+
+(defn day-13b [data]
+  (->> data
+       (partition-by #{""})
+       (remove #{[""]})
+       (map #(find-mirrors fixup-mirror %))
        (apply +)))
 
 (comment
@@ -707,4 +734,4 @@
   ;; Keep kondo happy
   [day-1a day-1b day-2a day-2b day-3a day-3b day-4a day-4b day-5a day-5b day-6a day-6b]
   [day-7a day-7b day-8a day-8b day-9a day-9b day-10a day-10b day-11a day-11b day-12a]
-  [day-13a])
+  [day-13a day-13b])

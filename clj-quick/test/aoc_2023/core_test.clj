@@ -415,7 +415,8 @@
               "#####.##."
               "..##..###"
               "#....#..#"]
-   :result [5 400]})
+   :result [5 400]
+   :result-b [300 100]})
 
 (deftest test-day-13a
   (testing "day-13a example"
@@ -423,3 +424,10 @@
            (ac/day-13a (:examples day-13-examples))))
   (testing "day-13a solution"
     (is (= 30705 (ac/day-13a (read-data "day-13-input.txt")))))))
+
+(deftest test-day-13b
+  (testing "day-13b example"
+    (is (= (->> day-13-examples :result-b (apply +))
+           (ac/day-13b (:examples day-13-examples))))
+  (testing "day-13b solution"
+    (is (= 44615 (ac/day-13b (read-data "day-13-input.txt")))))))
