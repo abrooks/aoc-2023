@@ -431,3 +431,25 @@
            (ac/day-13b (:examples day-13-examples))))
   (testing "day-13b solution"
     (is (= 44615 (ac/day-13b (read-data "day-13-input.txt")))))))
+
+;;; Day 14 ;;;
+
+(def day-14-examples
+  {:example ["O....#...."
+             "O.OO#....#"
+             ".....##..."
+             "OO.#O....O"
+             ".O.....O#."
+             "O.#..O.#.#"
+             "..O..#O..O"
+             ".......O.."
+             "#....###.."
+             "#OO..#...."]
+   :result 136})
+
+(deftest test-day-14a
+  (testing "day-14a example"
+    (is (= (->> day-14-examples :result)
+           (ac/day-14a (:example day-14-examples)))))
+  (testing "day-14a solution"
+    (is (= 107053 (ac/day-14a (read-data "day-14-input.txt"))))))

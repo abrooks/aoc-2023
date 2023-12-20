@@ -723,6 +723,28 @@
        (map #(find-mirrors fixup-mirror %))
        (apply +)))
 
+;;; Day 14 ;;;
+
+(defn day-14a [data]
+  (->> (for [[r line] (map vector (range) data)
+             [c char] (map vector (range) line)
+             :when (#{\O \#} char)]
+         [[r c] char])
+       (group-by (fn [[[_r c] _d]] c))
+       (map (fn [[_k v]]
+              (let [runs (sort-by first v)]
+                (loop [runs runs acc [] row 0]
+                  (if runs
+                    (let [[[[r _c] d] & rest-runs] runs]
+                      (if (= d \#)
+                        (recur rest-runs acc (inc r))
+                        (recur rest-runs (conj acc row) (inc row))))
+                    acc)))))
+       (apply concat)
+       (map #(- (count data) %))
+       (apply +)))
+
+
 (comment
   (set! *warn-on-reflection* true)
   (require 'clojure.test)
@@ -734,4 +756,4 @@
   ;; Keep kondo happy
   [day-1a day-1b day-2a day-2b day-3a day-3b day-4a day-4b day-5a day-5b day-6a day-6b]
   [day-7a day-7b day-8a day-8b day-9a day-9b day-10a day-10b day-11a day-11b day-12a]
-  [day-13a day-13b])
+  [day-13a day-13b day-14a])
