@@ -453,3 +453,28 @@
            (ac/day-14a (:example day-14-examples)))))
   (testing "day-14a solution"
     (is (= 107053 (ac/day-14a (read-data "day-14-input.txt"))))))
+
+;;; Day 25 ;;;
+
+(def day-25-examples
+  {:example ["jqt: rhn xhk nvd"
+             "rsh: frs pzl lsr"
+             "xhk: hfx"
+             "cmg: qnr nvd lhk bvb"
+             "rhn: xhk bvb hfx"
+             "bvb: xhk hfx"
+             "pzl: lsr hfx nvd"
+             "qnr: nvd"
+             "ntq: jqt hfx bvb xhk"
+             "nvd: lhk"
+             "lsr: lhk"
+             "rzs: qnr cmg lsr rsh"
+             "frs: qnr lhk lsr"]
+   :result 54})
+
+(deftest test-day-25a
+  (testing "day-25a example"
+    (is (= (->> day-25-examples :result)
+           (ac/day-25a (:example day-25-examples)))))
+  (testing "day-25a solution"
+    (is (= 507626 (ac/day-25a (read-data "day-25-input.txt"))))))

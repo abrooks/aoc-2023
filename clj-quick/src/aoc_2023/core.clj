@@ -594,8 +594,8 @@
                         [x y]))
         galaxy-pair-double-dists (for [[x1 y1] galaxies
                                        [x2 y2] galaxies]
-                                   (+ (abs (- x2 x1)), (abs (- y2 y1)))) ]
-  (/ (apply + galaxy-pair-double-dists) 2)))
+                                   (+ (abs (- x2 x1)), (abs (- y2 y1))))]
+    (/ (apply + galaxy-pair-double-dists) 2)))
 
 (defn day-11b [n data]
   (let [r1 (day-11a 1 data)
@@ -744,6 +744,46 @@
        (map #(- (count data) %))
        (apply +)))
 
+;;; Day 25 ;;;
+
+(defn relax-edge [[A B] graph]
+  (for [[a b :as x] (map seq graph)
+        :let [sup-a (or (= A a) (= B a))
+              sup-b (or (= A b) (= B b))]
+        :when (not (and sup-a sup-b))]
+    (cond
+      sup-a [(into A B) b]
+      sup-b [(into A B) a]
+      :default x)))
+
+(defn relax-graph [graph]
+  (let [cnt (count (set (apply concat graph)))]
+    #_(prn :cnt cnt)
+    (if (= 2 cnt)
+      (do
+        (prn :final (count graph) :a-b (count (first (first graph))) (count (second (first graph))))
+        graph)
+      (let [[e & r] graph]
+        (recur (relax-edge (seq e) r))))))
+
+(defn rerelax-graph [i graph]
+  (prn :i i)
+  (relax-graph graph))
+
+(defn day-25a [data]
+  (-> (reduce (fn [acc l]
+                (let [[f & r :as s] (re-seq #"\w+" l)]
+                  (reduce #(conj %1 (hash-set #{f} #{%2})) acc r)))
+              #{}
+              data)
+      (->>
+       repeat
+       (map shuffle)
+       (map-indexed #(time (doall (rerelax-graph %1 %2))))
+       (some #(when (= 3 (count %)) %))
+       first)
+      (as-> [a b]
+            (* (count a) (count b)))))
 
 (comment
   (set! *warn-on-reflection* true)
@@ -751,7 +791,7 @@
   (require 'aoc-2023.core :reload)
   (require 'aoc-2023.core-test :reload)
   (time (clojure.test/run-tests 'aoc-2023.core-test))
-  (time (clojure.test/run-test-var #'aoc-2023.core-test/test-day-12a))
+  (time (clojure.test/run-test-var #'aoc-2023.core-test/test-day-25a))
   (time (clojure.test/run-test-var #'aoc-2023.core-test/test-day-12b))
   ;; Keep kondo happy
   [day-1a day-1b day-2a day-2b day-3a day-3b day-4a day-4b day-5a day-5b day-6a day-6b]
