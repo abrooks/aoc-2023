@@ -758,17 +758,10 @@
 
 (defn relax-graph [graph]
   (let [cnt (count (set (apply concat graph)))]
-    #_(prn :cnt cnt)
     (if (= 2 cnt)
-      (do
-        (prn :final (count graph) :a-b (count (first (first graph))) (count (second (first graph))))
-        graph)
+        graph
       (let [[e & r] graph]
         (recur (relax-edge (seq e) r))))))
-
-(defn rerelax-graph [i graph]
-  (prn :i i)
-  (relax-graph graph))
 
 (defn day-25a [data]
   (-> (reduce (fn [acc l]
@@ -779,7 +772,7 @@
       (->>
        repeat
        (map shuffle)
-       (map-indexed #(time (doall (rerelax-graph %1 %2))))
+       (map relax-graph)
        (some #(when (= 3 (count %)) %))
        first)
       (as-> [a b]
